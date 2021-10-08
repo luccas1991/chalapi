@@ -1,10 +1,21 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Module } from "@nestjs/common";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import { MongooseModule } from "@nestjs/mongoose";
+import { UsersController } from "./users/users.controller";
+import { UsersService } from "./users/users.service";
+import { RecipeController } from "./recipe/recipe.controller";
+import { RecipeService } from "./recipe/recipe.service";
+import { User, UserSchema } from "./users/schema/user.schema";
 
 @Module({
-  imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    MongooseModule.forRoot(
+      `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}?retryWrites=true&w=majority`
+    ),
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+  ],
+  controllers: [AppController, UsersController, RecipeController],
+  providers: [AppService, UsersService, RecipeService],
 })
 export class AppModule {}
