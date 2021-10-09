@@ -13,29 +13,30 @@ export class Recipe {
   author: string;
   
   @Prop()
-  configs: [RecipeConfig];
+  configs: [IrrigationConfig];
   
 }
 
-class RecipeConfig {
-    @Prop()
-    irrigations:[IrrigationConfig];
-    @Prop()
-    vegeWeeks: number;
-    @Prop()
-    flowWeeks: number;
-    
-}
-
-class IrrigationConfig {
-    @Prop()
-    name:string;
+export class IrrigationConfig {
     @Prop()
     week:number;
     @Prop()
-    amout:number;
+    repeat:number;
+    @Prop()
+    dayTime:number;
+    @Prop()
+    products:[ProductConfig];
+}
+
+export class ProductConfig{
+    @Prop()
+    name:string;
     @Prop()
     repeat:number;
+    @Prop()
+    amount:number;
+    @Prop()
+    consecutive:Boolean;
 }
 
 export const RecipeSchema = SchemaFactory.createForClass(Recipe);

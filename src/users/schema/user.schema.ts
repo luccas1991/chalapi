@@ -11,6 +11,20 @@ export class User {
 
   @Prop()
   password: string;
+
+  @Prop()
+  grows: Array<Grow>
+}
+
+class Grow {
+  @Prop()
+  recipeId:string
+  @Prop()
+  startDate:Date
+  @Prop()
+  name:string
+  @Prop()
+  image:string
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
