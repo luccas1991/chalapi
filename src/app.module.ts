@@ -7,13 +7,17 @@ import { UsersService } from "./users/users.service";
 import { RecipeController } from "./recipe/recipe.controller";
 import { RecipeService } from "./recipe/recipe.service";
 import { User, UserSchema } from "./users/schema/user.schema";
+import { Recipe, RecipeSchema } from "./recipe/schema/recipe.schema";
 
 @Module({
   imports: [
     MongooseModule.forRoot(
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_URL}?retryWrites=true&w=majority`
     ),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Recipe.name, schema: RecipeSchema },
+    ]),
   ],
   controllers: [AppController, UsersController, RecipeController],
   providers: [AppService, UsersService, RecipeService],
