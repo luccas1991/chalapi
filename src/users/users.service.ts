@@ -14,8 +14,8 @@ export class UsersService {
     return createdCat.save();
   }
 
-  async addGrow(createGrowDto: CreateGrowDto): Promise<User> {
-    const user = await this.userModel.findOne({ name: createGrowDto.userName });
+  async addGrow(userName:string,createGrowDto: CreateGrowDto): Promise<User> {
+    const user = await this.userModel.findOne({ name: userName });
     user.grows.push({
       image: createGrowDto.image,
       name: createGrowDto.name,
@@ -26,6 +26,10 @@ export class UsersService {
     return user.save();
   }
 
+  async findOne(name:string): Promise<User> {
+    return this.userModel.findOne({name:name}).exec();
+  }
+  
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
   }

@@ -3,5 +3,4 @@ export interface CreateGrowDto {
     startDate:Date
     name:string
     image:string
-    userName: string;
 }
