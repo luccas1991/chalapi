@@ -16,7 +16,7 @@ export class User {
   grows: Array<Grow>
 }
 
-class Grow {
+export class Grow {
   @Prop()
   recipeId:string
   @Prop()

@@ -23,7 +23,7 @@ export class IrrigationConfig {
     @Prop()
     repeat:number;
     @Prop()
-    dayTime:number;
+    daytime:number;
     @Prop()
     products:[ProductConfig];
 }

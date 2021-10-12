@@ -15,6 +15,7 @@ import { jwtConstants } from "./auth/constants";
 import { LocalStrategy } from "./auth/local.strategy";
 import { JwtStrategy } from "./auth/jwt.strategy";
 import { AuthService } from "./auth/auth.service";
+import { GrowService } from './grow/grow.service';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { AuthService } from "./auth/auth.service";
     LocalStrategy,
     JwtStrategy,
     AuthService,
+    GrowService,
   ],
 })
 export class AppModule {}

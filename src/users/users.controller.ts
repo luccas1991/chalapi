@@ -10,6 +10,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "src/auth/auth.service";
 import { JWTAuthGuard } from "src/auth/jwt-auth.guard";
 import { LocalAuthGuard } from "src/auth/local-auth.guard";
+import { GrowService } from "src/grow/grow.service";
 import { AlarmsService } from "./alarms.service";
 import { CreateGrowDto } from "./dto/createGrow.dto";
 import { CreateUserDto } from "./dto/createUser.dto";
@@ -20,7 +21,8 @@ export class UsersController {
   constructor(
     private userService: UsersService,
     private authService: AuthService,
-    private alarmsService: AlarmsService
+    private alarmsService: AlarmsService,
+    private growService: GrowService
   ) {}
 
   @UseGuards(LocalAuthGuard)
@@ -38,6 +40,12 @@ export class UsersController {
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
     return this.userService.create(createUserDto);
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Get("grows")
+  getGrows(@Request() { user }) {
+    return this.growService.findAll(user);
   }
 
   @UseGuards(JWTAuthGuard)

@@ -1,16 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { differenceInDays, addDays } from "date-fns";
 import { RecipeService } from "src/recipe/recipe.service";
-import { ProductConfig } from "src/recipe/schema/recipe.schema";
-import { User } from "./schema/user.schema";
+import { ProductConfig, Recipe } from "src/recipe/schema/recipe.schema";
+import { Grow, User } from "./schema/user.schema";
 import { UsersService } from "./users.service";
 
 @Injectable()
 export class AlarmsService {
-  constructor(
-    private recipeService: RecipeService,
-    private userService: UsersService
-  ) {}
+  constructor(private recipeService: RecipeService) {}
 
   async findAll(user: User): Promise<any> {
     const recipes = await this.recipeService.findAll();
@@ -20,60 +17,69 @@ export class AlarmsService {
 
       !recipe && console.log("recipe no encontrado", grow);
 
-      const growDay = differenceInDays(new Date(grow.startDate), new Date());
-      const growWeek = Math.floor(growDay / 7);
-
-      const notifications = recipe.configs
-        .sort((x) => x.week)
-        .flatMap((irrigation) => {
-          if (irrigation.week >= growWeek) {
-            let i = 0;
-            const alarms = [];
-            let products = irrigation.products.map((product) => ({
-              name: product.name,
-              uses: 0,
-            }));
-            while (i < irrigation.repeat) {
-              alarms.push({
-                iconUrl: grow.image,
-                title: grow.name,
-                date: addDays(
-                  new Date(),
-                  irrigation.week * 7 +
-                    i * Math.floor(7 / irrigation.repeat)
-                ),
-                message: irrigation.products.flatMap(
-                  this.mapProductMessages(products, i)
-                ),
-              });
-              i++
-            }
-            return alarms;
-          }
-          return [];
-        });
-
-      return notifications;
+      return this.getAlarms(recipe, grow);
     });
 
     return alarms;
   }
 
+  getAlarms(
+    recipe: Recipe,
+    grow: Grow
+  ): {
+    iconUrl: string;
+    title: string;
+    date: Date;
+    message: string;
+    daytime: string;
+  }[] {
+    return recipe.configs
+      .sort((x) => x.week)
+      .flatMap((irrigation) => {
+        let i = 0;
+        const alarms = [];
+        let products = irrigation.products.map((product) => ({
+          name: product.name,
+          uses: 0,
+        }));
+        while (i < irrigation.repeat) {
+          alarms.push({
+            iconUrl: grow.image,
+            title: grow.name,
+            date: addDays(
+              new Date(grow.startDate),
+              irrigation.week * 7 + i * Math.floor(7 / irrigation.repeat)
+            ),
+            products: irrigation.products
+              .flatMap(this.mapProductMessages(products, i))
+              .filter((x) => x),
+            daytime: irrigation.daytime,
+          });
+          i++;
+        }
+        return alarms;
+      });
+  }
+
   private mapProductMessages(
     products: { name: string; uses: number }[],
     i: number
-  ): (value: ProductConfig, index: number, array: ProductConfig[]) => string {
+  ): (
+    value: ProductConfig,
+    index: number,
+    array: ProductConfig[]
+  ) => { name: string; amount: number } {
     return (product) => {
-      let lineAlarm = "";
+      let outProduct;
       const { uses } = products.find((x) => x.name == product.name);
       if (
         i == 0 ||
         (product.repeat < uses && ((product.consecutive && i % 2) || !(i % 2)))
       ) {
-        lineAlarm = `${product.name} - ${product.amount} \n`;
+        outProduct = { amount: product.amount, name: product.name };
         products.find((x) => x.name == product.name).uses++;
       }
-      return lineAlarm;
+      return outProduct;
     };
   }
 }
