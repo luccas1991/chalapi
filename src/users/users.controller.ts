@@ -5,6 +5,7 @@ import {
   Post,
   UseGuards,
   Request,
+  Delete,
 } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { AuthService } from "src/auth/auth.service";
@@ -52,6 +53,12 @@ export class UsersController {
   @Post("grow")
   createGrow(@Request() { user }, @Body() createGrowDto: CreateGrowDto) {
     return this.userService.addGrow(user.name, createGrowDto);
+  }
+
+  @UseGuards(JWTAuthGuard)
+  @Delete("grow")
+  deleteGrow(@Request() { user }, @Body() createGrowDto: CreateGrowDto) {
+    return this.userService.deleteGrow(user.name, createGrowDto);
   }
 
   @UseGuards(JWTAuthGuard)

@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { CreateGrowDto } from "./dto/createGrow.dto";
 import { CreateUserDto } from "./dto/createUser.dto";
 import { User, UserDocument } from "./schema/user.schema";
-
+import { remove } from "lodash";
 @Injectable()
 export class UsersService {
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
@@ -14,7 +14,7 @@ export class UsersService {
     return createdCat.save();
   }
 
-  async addGrow(userName:string,createGrowDto: CreateGrowDto): Promise<User> {
+  async addGrow(userName: string, createGrowDto: CreateGrowDto): Promise<User> {
     const user = await this.userModel.findOne({ name: userName });
     user.grows.push({
       image: createGrowDto.image,
@@ -26,10 +26,19 @@ export class UsersService {
     return user.save();
   }
 
-  async findOne(name:string): Promise<User> {
-    return this.userModel.findOne({name:name}).exec();
+  async deleteGrow(
+    userName: string,
+    createGrowDto: CreateGrowDto
+  ): Promise<User> {
+    const user = await this.userModel.findOne({ name: userName });
+    remove(user.grows, (x) => x.name == createGrowDto.name);
+    return user.save();
   }
-  
+
+  async findOne(name: string): Promise<User> {
+    return this.userModel.findOne({ name: name }).exec();
+  }
+
   async findAll(): Promise<User[]> {
     return this.userModel.find().exec();
   }
