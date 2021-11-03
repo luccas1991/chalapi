@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Request, Get, Post } from '@nestjs/common';
 import { CreateRecipeDto } from './dto/createRecipe.dto';
 import { RecipeService } from './recipe.service';
 
@@ -13,7 +13,8 @@ export class RecipeController {
     }
 
     @Post()
-    create(@Body() createUserDto: CreateRecipeDto){
-        return this.recipeService.create(createUserDto)
+    create(@Request() { user }, @Body() createRecipeDto: CreateRecipeDto){
+        createRecipeDto.author = user.name
+        return this.recipeService.create(createRecipeDto)
     }
 }

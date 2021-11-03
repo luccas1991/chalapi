@@ -25,6 +25,8 @@ export class IrrigationConfig {
     @Prop()
     daytime:number;
     @Prop()
+    ligthTime:number;
+    @Prop()
     products:[ProductConfig];
 }
 
